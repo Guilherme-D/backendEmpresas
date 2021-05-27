@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<User> listUsersByPage(Pageable page) {
-        return this.userRepository.findAllByIsAdminAndDeletedAtIsNullOrderByName(false, page);
+        return this.userRepository.findAllAndDeletedAtIsNullOrderByName(page);
     }
 
 }

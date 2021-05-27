@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
     User findOneByEmail(String email);
-    Page<User> findAllByIsAdminAndDeletedAtIsNullOrderByName(boolean isAdmin, Pageable page);
+    Page<User> findAllAndDeletedAtIsNullOrderByName(Pageable page);
 }
