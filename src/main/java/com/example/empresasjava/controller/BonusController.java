@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@Controller
+@RestController
 @CrossOrigin
 @RequestMapping("/bonus")
 public class BonusController {
