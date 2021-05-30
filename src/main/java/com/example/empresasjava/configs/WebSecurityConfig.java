@@ -22,6 +22,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 @EnableWebSecurity
@@ -61,18 +64,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		httpSecurity.csrf().disable()
 				// dont authenticate this particular request
-				.authorizeRequests().antMatchers("/auth", "/user/create", "/**").permitAll()
+				.authorizeRequests().antMatchers("/auth", "/user/create").permitAll()
 				.antMatchers("/v2/api-docs", "/swagger-resources/**",
-				"/swagger-ui.html", "/webjars/springfox-swagger-ui/**").permitAll();
+				"/swagger-ui.html", "/webjars/springfox-swagger-ui/**").permitAll()
+				.antMatchers(HttpMethod.OPTIONS).permitAll()
 				// all other requests need to be authenticated
-						//.anyRequest().authenticated().and().
+						.anyRequest().authenticated().and().
 				// make sure we use stateless session; session won't be used to
 				// store user's state.
-						//exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
-				//.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+						exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		// Add a filter to validate the tokens with every request
-		//httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
-
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/*").allowedOrigins("*");
+			}
+		};
+	}
 }
